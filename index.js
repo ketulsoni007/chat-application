@@ -8,6 +8,10 @@ import dotenv from "dotenv";
 import authRoute from "./routes/authRoute.js";
 import chatRoute from "./routes/chatRoute.js";
 import path from "path";
+import { fileURLToPath } from "url"; // Import the required function
+
+const __filename = fileURLToPath(import.meta.url); // Get the current module's filename
+const __dirname = path.dirname(__filename); // Derive the directory name
 
 const app = express();
 const server = http.createServer(app);
@@ -32,7 +36,7 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  // Join a room when user logs in (you might need to modify this based on your authentication flow)
+  // Join a room when the user logs in (you might need to modify this based on your authentication flow)
   socket.on("join-room", (room) => {
     socket.join(room);
     console.log(`User ${socket.id} joined room ${room}`);
@@ -42,11 +46,6 @@ io.on("connection", (socket) => {
   socket.on("send-message", (data) => {
     console.log("Message sent:", data);
     socket.broadcast.to(data.receiver).emit("receive-message", data);
-    // if (io.sockets.adapter.connected[data.sender] !== undefined) {
-    //   // Broadcast the message to the receiver's room
-    // } else {
-    //   console.log("Sender is not connected.");
-    // }
   });
 
   // Handle disconnecting
@@ -55,10 +54,10 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(express.static(path.join(__dirname,"./client/build")));
-app.get("*",function(req,res){
-  res.sendFile(path.join(__dirname,"./client/build/index.html"))
-})
+app.use(express.static(path.join(__dirname, "./client/build")));
+app.get("*", function (req, res) {
+  res.sendFile(path.join(__dirname, "./client/build/index.html"));
+});
 
 const PORT = process.env.PORT || 8080;
 
