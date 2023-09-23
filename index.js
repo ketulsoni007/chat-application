@@ -9,6 +9,8 @@ import authRoute from "./routes/authRoute.js";
 import chatRoute from "./routes/chatRoute.js";
 import path from "path";
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 const app = express();
 const server = http.createServer(app);
 
