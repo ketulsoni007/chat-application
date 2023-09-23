@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
 });
 
 // Serve static files from the client build directory
-app.use(express.static(path.resolve(__dirname, "../client/build")));
+app.use(express.static(path.resolve(__dirname, "./client/build")));
 
 // Route all other requests to the client's index.html
 app.get("*", (req, res) => {
