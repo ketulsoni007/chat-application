@@ -8,10 +8,6 @@ import dotenv from "dotenv";
 import authRoute from "./routes/authRoute.js";
 import chatRoute from "./routes/chatRoute.js";
 import path from "path";
-import { fileURLToPath } from "url"; // Import the required function
-
-const __filename = fileURLToPath(import.meta.url); // Get the current module's filename
-const __dirname = path.dirname(__filename); // Derive the directory name
 
 const app = express();
 const server = http.createServer(app);
@@ -27,7 +23,7 @@ app.use("/api/v1/chat", chatRoute);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // Update with your frontend origin
+    origin: "http://ec2-16-171-240-135.eu-north-1.compute.amazonaws.com:3000", // Update with your frontend origin
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -36,7 +32,7 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  // Join a room when the user logs in (you might need to modify this based on your authentication flow)
+  // Join a room when a user logs in (you might need to modify this based on your authentication flow)
   socket.on("join-room", (room) => {
     socket.join(room);
     console.log(`User ${socket.id} joined room ${room}`);
@@ -54,14 +50,17 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(express.static(path.join(__dirname, "./client/build")));
-app.get("*", function (req, res) {
-  res.sendFile(path.join(__dirname, "./client/build/index.html"));
+// Serve static files from the client build directory
+app.use(express.static(path.resolve(__dirname, "../client/build")));
+
+// Route all other requests to the client's index.html
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../client/build/index.html"));
 });
 
 const PORT = process.env.PORT || 8080;
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
